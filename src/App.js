@@ -163,9 +163,9 @@ function App() {
 // scale down on small screens
 const scale = isMobile ? 0.6 : 1;
 
-const width = 100 * scale;
-const height = 100 * scale;
-const radius = 50 * scale;
+const width = 80 * scale;
+const height = 80 * scale;
+const radius = 40 * scale;
 
       const pos = positions[index];
 
