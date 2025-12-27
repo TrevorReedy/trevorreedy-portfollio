@@ -95,6 +95,9 @@ export const PROJECTS = [
 ];
 
 function Home() {
+    useEffect(() => {
+    document.title = "Trevor Reedy | Software Engineer";
+  }, []);
   const containerRef = useRef(null);
 
   // UI state
