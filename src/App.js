@@ -1,53 +1,104 @@
-import React, { useEffect, useRef, useState } from 'react';
-import Matter from 'matter-js';
-import './App.css';
+import React, { useEffect, useRef, useState } from "react";
+import { Routes, Route, Link } from "react-router-dom";
+import Matter from "matter-js";
+import "./App.css";
+import BlogPostPage from "./BlogPostPage.js";
+
+function slugify(str) {
+  return String(str)
+    .trim()
+    .toLowerCase()
+    .replace(/['"]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
 
 const ICONS = [
- "css.svg",
- "django.svg",
- "flask.svg",
- "git.svg",
- "html.svg",
- "hugging-face.svg",
- "java.svg",
- "js.svg",
- "kotlin.svg",
- "mysql.svg",
- "nodejs.svg",
- "numpy.svg",
- "pandas.svg",
- "python.svg",
- "react.svg",
- "spring.svg",
- "sqlite.svg",
- "tailwind.svg",
- "typescript.svg",
- "zig.svg",
+  "css.svg",
+  "django.svg",
+  "flask.svg",
+  "git.svg",
+  "html.svg",
+  "hugging-face.svg",
+  "java.svg",
+  "js.svg",
+  "kotlin.svg",
+  "mysql.svg",
+  "nodejs.svg",
+  "numpy.svg",
+  "pandas.svg",
+  "python.svg",
+  "react.svg",
+  "spring.svg",
+  "sqlite.svg",
+  "tailwind.svg",
+  "typescript.svg",
+  "zig.svg",
 ];
 
-const GITHUB_PROJECTS = [
+/**
+ * IMPORTANT:
+ * Each project can now fetch its blog from its own GitHub repo.
+ *
+ * blog fields:
+ * - owner: GitHub owner/org
+ * - repo: repository name
+ * - branch: usually "main"
+ * - folder: folder path inside repo (ex: "content/blog")
+ * - file: markdown filename (ex: "zigit.md")
+ *
+ * Route uses `slug` (unique per project) not the repo name.
+ */
+export const PROJECTS = [
   {
+    slug: "zigit", // URL -> /blog/zigit
     name: "Zigit",
     description: "A zig based CLI tool for git automation for new users",
     technologies: ["Zig", "GIT"],
     githubUrl: "https://github.com/TrevorReedy/ZigGit",
-    liveUrl: "https://project-one.vercel.app"
+    blog: {
+      owner: "TrevorReedy",
+      repo: "ZigGit",
+      branch: "main",
+      folder: "content/blog",
+      file: "blog.md",
+    },
   },
   {
+    slug: "go-board-game",
     name: "GO Board Game",
     description: "A graphical interface to play the game of GO with complete scoring",
     technologies: ["Java", "Swing"],
     githubUrl: "https://github.com/TrevorReedy/GO_Board_Game_Java",
-    liveUrl: "https://project-two.netlify.app"
-  }
+    blog: {
+      owner: "TrevorReedy",
+      repo: "GO_Board_Game_Java",
+      branch: "main",
+      folder: "content/blog",
+      file: "blog.md",
+    },
+  },
+  {
+    slug: "mobile-sentrix-price-calc",
+    name: "Mobile Sentrix Price Calculator",
+    description: "A in house tool for CPR to use to calculate labor prices and to ",
+    technologies: ["Javascript", "Jest"],
+    githubUrl: "https://github.com/TrevorReedy/mobile_sentrix-price-tool",
+    blog: {
+      owner: "TrevorReedy",
+      repo: "mobile_sentrix-price-tool",
+      branch: "main",
+      folder: "content/blog",
+      file: "blog.md",
+    },
+  },
 ];
 
-function App() {
+function Home() {
   const containerRef = useRef(null);
 
   // UI state
   const [iconsLoaded, setIconsLoaded] = useState(false);
-  const [isFalling, setIsFalling] = useState(false);
 
   // Refs for physics + scroll
   const engineRef = useRef(null);
@@ -58,7 +109,6 @@ function App() {
   const scrollTimeoutRef = useRef(null);
   const lastScrollYRef = useRef(0);
 
-  // Calculate more spread out, organic positions
   const calculateOrganicPositions = (count, width, height) => {
     const positions = [];
     const margin = 80;
@@ -97,7 +147,6 @@ function App() {
           y = margin + Math.random() * (height - 2 * margin);
         }
 
-        // Check if this position is too close to existing positions
         validPosition = true;
         for (const existingPos of positions) {
           const distance = Math.sqrt(
@@ -109,7 +158,6 @@ function App() {
           }
         }
 
-        // Also ensure it's within bounds
         if (x < margin || x > width - margin || y < margin || y > height - margin) {
           validPosition = false;
         }
@@ -119,14 +167,13 @@ function App() {
 
       positions.push({
         x: Math.max(margin, Math.min(width - margin, x)),
-        y: Math.max(margin, Math.min(height - margin, y))
+        y: Math.max(margin, Math.min(height - margin, y)),
       });
     }
 
     return positions;
   };
 
-  // Set up Matter.js + icons
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -136,19 +183,14 @@ function App() {
     const Bodies = Matter.Bodies;
     const Runner = Matter.Runner;
 
-    // Clear any existing icons
-    while (container.firstChild) {
-      container.removeChild(container.firstChild);
-    }
+    while (container.firstChild) container.removeChild(container.firstChild);
 
     const cw = container.offsetWidth;
     const ch = container.offsetHeight;
 
     const positions = calculateOrganicPositions(ICONS.length, cw, ch);
 
-    const engine = Engine.create({
-      gravity: { x: 0, y: 0 },
-    });
+    const engine = Engine.create({ gravity: { x: 0, y: 0 } });
     const runner = Runner.create();
 
     engineRef.current = engine;
@@ -159,30 +201,25 @@ function App() {
     ICONS.forEach((iconName, index) => {
       const isMobile = cw < 600;
 
-
-// scale down on small screens
-const scale = isMobile ? 0.6 : 1;
-
-const width = 80 * scale;
-const height = 80 * scale;
-const radius = 40 * scale;
+      const scale = isMobile ? 0.6 : 1;
+      const width = 80 * scale;
+      const height = 80 * scale;
+      const radius = 40 * scale;
 
       const pos = positions[index];
 
-      // DOM icon
-      const icon = document.createElement('img');
+      const icon = document.createElement("img");
       icon.src = `/icons/${iconName}`;
-      icon.className = 'icon';
+      icon.className = "icon";
       icon.style.width = `${width}px`;
       icon.style.height = `${height}px`;
       icon.style.left = `${pos.x - width / 2}px`;
       icon.style.top = `${pos.y - height / 2}px`;
-      icon.style.opacity = '1';
-      icon.style.position = 'absolute';
+      icon.style.opacity = "1";
+      icon.style.position = "absolute";
 
       container.appendChild(icon);
 
-      // Physics body
       const body = Bodies.circle(pos.x, pos.y, radius, {
         restitution: 0.8,
         frictionAir: 0.035,
@@ -198,65 +235,52 @@ const radius = 40 * scale;
     bodiesRef.current = newBodies;
     setIconsLoaded(true);
 
-    // Add hero section protection - simple centered rectangle
-    const heroBody = Bodies.rectangle(
-      cw / 2,  // center X
-      ch / 2,  // center Y
-      400,     // width
-      200,     // height
-      {
-        isStatic: true,
-        render: { visible: false },
-      }
-    );
+    const heroBody = Bodies.rectangle(cw / 2, ch / 2, 400, 200, {
+      isStatic: true,
+      render: { visible: false },
+    });
     World.add(engine.world, heroBody);
 
-    // Regular boundary walls
     const wallThickness = 100;
     const boundaries = [
-      Bodies.rectangle(cw / 2, ch + wallThickness / 2, cw * 2, wallThickness, { 
+      Bodies.rectangle(cw / 2, ch + wallThickness / 2, cw * 2, wallThickness, {
         isStatic: true,
-        render: { visible: false }
+        render: { visible: false },
       }),
-      Bodies.rectangle(cw / 2, -wallThickness / 2, cw * 2, wallThickness, { 
+      Bodies.rectangle(cw / 2, -wallThickness / 2, cw * 2, wallThickness, {
         isStatic: true,
-        render: { visible: false }
+        render: { visible: false },
       }),
-      Bodies.rectangle(-wallThickness / 2, ch / 2, wallThickness, ch * 2, { 
+      Bodies.rectangle(-wallThickness / 2, ch / 2, wallThickness, ch * 2, {
         isStatic: true,
-        render: { visible: false }
+        render: { visible: false },
       }),
-      Bodies.rectangle(cw + wallThickness / 2, ch / 2, wallThickness, ch * 2, { 
+      Bodies.rectangle(cw + wallThickness / 2, ch / 2, wallThickness, ch * 2, {
         isStatic: true,
-        render: { visible: false }
+        render: { visible: false },
       }),
     ];
-    
     World.add(engine.world, boundaries);
-
     Runner.run(runner, engine);
 
-    // Animation loop
     const updatePositions = () => {
       newBodies.forEach(({ img, body }) => {
         if (!img || !body) return;
 
-        const isZig = img.src.includes('zig.svg');
-        const width = isZig ? 120 : 100;
-        const height = isZig ? 42 : 100;
+        const isZig = img.src.includes("zig.svg");
+        const w = isZig ? 120 : 100;
+        const h = isZig ? 42 : 100;
 
-        img.style.left = `${body.position.x - width / 2}px`;
-        img.style.top = `${body.position.y - height / 2}px`;
+        img.style.left = `${body.position.x - w / 2}px`;
+        img.style.top = `${body.position.y - h / 2}px`;
         img.style.transform = `rotate(${body.angle}rad)`;
 
         if (isFallingRef.current) {
-          const velocity = Math.sqrt(
-            body.velocity.x ** 2 + body.velocity.y ** 2
-          );
+          const velocity = Math.sqrt(body.velocity.x ** 2 + body.velocity.y ** 2);
           const blurAmount = Math.min(velocity * 0.5 * 0.3, 10);
           img.style.filter = `blur(${blurAmount}px) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))`;
         } else {
-          img.style.filter = 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))';
+          img.style.filter = "drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))";
         }
       });
 
@@ -265,7 +289,6 @@ const radius = 40 * scale;
 
     updatePositions();
 
-    // Cleanup
     return () => {
       if (runnerRef.current) {
         Matter.Runner.stop(runnerRef.current);
@@ -276,19 +299,15 @@ const radius = 40 * scale;
         Matter.Engine.clear(engineRef.current);
         engineRef.current = null;
       }
-
       if (containerRef.current) {
-        const containerEl = containerRef.current;
-        while (containerEl.firstChild) {
-          containerEl.removeChild(containerEl.firstChild);
+        while (containerRef.current.firstChild) {
+          containerRef.current.removeChild(containerRef.current.firstChild);
         }
       }
-
       bodiesRef.current = [];
     };
   }, []);
 
-  // Scroll handler
   useEffect(() => {
     const Body = Matter.Body;
     let scrollTimer;
@@ -296,7 +315,6 @@ const radius = 40 * scale;
     const handleScroll = () => {
       const engine = engineRef.current;
       const bodies = bodiesRef.current;
-
       if (!engine || bodies.length === 0) return;
 
       const currentScrollY = window.scrollY;
@@ -304,12 +322,9 @@ const radius = 40 * scale;
       lastScrollYRef.current = currentScrollY;
       if (Math.abs(scrollDelta) < 3) return;
 
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
 
       isFallingRef.current = true;
-      setIsFalling(true);
 
       engine.gravity.y = 0;
 
@@ -318,19 +333,14 @@ const radius = 40 * scale;
           x: body.velocity.x + (Math.random() - 0.5) * 18,
           y: body.velocity.y + (Math.random() - 0.5) * 18,
         });
-        Body.setAngularVelocity(
-          body,
-          body.angularVelocity + (Math.random() - 0.5) * 0.30
-        );
+        Body.setAngularVelocity(body, body.angularVelocity + (Math.random() - 0.5) * 0.3);
       });
 
       scrollTimeoutRef.current = setTimeout(() => {
         const engineNow = engineRef.current;
         if (!engineNow) return;
-
         engineNow.gravity.y = 0;
         isFallingRef.current = false;
-        setIsFalling(false);
       }, 500);
     };
 
@@ -342,10 +352,10 @@ const radius = 40 * scale;
       }, 40);
     };
 
-    window.addEventListener('scroll', throttledScrollHandler);
+    window.addEventListener("scroll", throttledScrollHandler);
 
     return () => {
-      window.removeEventListener('scroll', throttledScrollHandler);
+      window.removeEventListener("scroll", throttledScrollHandler);
       if (scrollTimer) clearTimeout(scrollTimer);
       if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
     };
@@ -353,34 +363,35 @@ const radius = 40 * scale;
 
   return (
     <div className="App">
-      {/* Icons created dynamically into this container */}
       <div className="icon-container" ref={containerRef}></div>
 
-      {/* Hero Section */}
       <section className="hero-section">
         <header className="App-header">
           <h1>Trevor Reedy</h1>
           <p>Software Developer</p>
-          <div style={{ marginTop: '2rem', fontSize: '1.1rem', opacity: 0.8 }}>
+          <div style={{ marginTop: "2rem", fontSize: "1.1rem", opacity: 0.8 }}>
             {!iconsLoaded && <p>Loading icons...</p>}
           </div>
         </header>
       </section>
 
-      {/* Projects Section */}
-      <section className="projects-section">
+      <section className="projects-section" id="projects">
         <div className="section-content">
           <h2>My Projects</h2>
           <div className="projects-grid">
-            {GITHUB_PROJECTS.map((project, index) => (
+            {PROJECTS.map((project, index) => (
               <div key={index} className="project-card">
                 <h3>{project.name}</h3>
                 <p>{project.description}</p>
+
                 <div className="tech-tags">
                   {project.technologies.map((tech, techIndex) => (
-                    <span key={techIndex} className="tech-tag">{tech}</span>
+                    <span key={techIndex} className="tech-tag">
+                      {tech}
+                    </span>
                   ))}
                 </div>
+
                 <div className="project-links">
                   <a
                     href={project.githubUrl}
@@ -390,15 +401,12 @@ const radius = 40 * scale;
                   >
                     GitHub
                   </a>
-                  {project.liveUrl && (
-                    <a
-                      href={project.liveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="project-link live-demo"
-                    >
-                      Live Demo
-                    </a>
+
+                  {/* Blog route */}
+                  {project.blog && (
+                    <Link to={`/blog/${project.slug}`} className="project-link blog">
+                      Blog
+                    </Link>
                   )}
                 </div>
               </div>
@@ -407,8 +415,7 @@ const radius = 40 * scale;
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section className="contact-section">
+      <section className="contact-section" id="contact">
         <div className="section-content">
           <h2>Get In Touch</h2>
           <div className="contact-content">
@@ -417,6 +424,7 @@ const radius = 40 * scale;
                 I'm always interested in new opportunities, collaborations, and interesting problems.
                 Tell me what you're working on and how I can help.
               </p>
+
               <div className="contact-links">
                 <a href="mailto:trevinator001@gmail.com" className="contact-link">
                   📧 trevinator001@gmail.com
@@ -446,6 +454,7 @@ const radius = 40 * scale;
                 <p className="contact-form-subtitle">
                   Drop a quick note about your project, opportunity, or idea.
                 </p>
+
                 <form
                   className="contact-form"
                   onSubmit={(e) => {
@@ -453,17 +462,14 @@ const radius = 40 * scale;
                     const form = e.target;
                     const data = new FormData(form);
 
-                    const name = data.get('name') || '';
-                    const email = data.get('email') || '';
-                    const message = data.get('message') || '';
+                    const name = data.get("name") || "";
+                    const email = data.get("email") || "";
+                    const message = data.get("message") || "";
 
-                    const subject = `Portfolio Contact from ${name || 'Visitor'}`;
-                    const body =
-                      `Name: ${name}\n` +
-                      `Email: ${email}\n\n` +
-                      `Message:\n${message}`;
+                    const subject = `Portfolio Contact from ${name || "Visitor"}`;
+                    const body = `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`;
 
-                    window.location.href = `mailto:your.email@example.com?subject=${encodeURIComponent(
+                    window.location.href = `mailto:trevinator001@gmail.com?subject=${encodeURIComponent(
                       subject
                     )}&body=${encodeURIComponent(body)}`;
 
@@ -472,24 +478,12 @@ const radius = 40 * scale;
                 >
                   <div className="form-row">
                     <label htmlFor="name">Name</label>
-                    <input
-                      id="name"
-                      name="name"
-                      type="text"
-                      placeholder="Your name"
-                      required
-                    />
+                    <input id="name" name="name" type="text" placeholder="Your name" required />
                   </div>
 
                   <div className="form-row">
                     <label htmlFor="email">Email</label>
-                    <input
-                      id="email"
-                      name="email"
-                      type="email"
-                      placeholder="youremail@email.com"
-                      required
-                    />
+                    <input id="email" name="email" type="email" placeholder="you@email.com" required />
                   </div>
 
                   <div className="form-row">
@@ -509,6 +503,7 @@ const radius = 40 * scale;
                 </form>
               </div>
             </div>
+
           </div>
         </div>
       </section>
@@ -516,4 +511,11 @@ const radius = 40 * scale;
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/blog/:slug" element={<BlogPostPage />} />
+    </Routes>
+  );
+}

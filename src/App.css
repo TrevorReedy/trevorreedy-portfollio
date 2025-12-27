@@ -605,3 +605,58 @@ body {
     padding: 1.5rem;
   }
 }
+
+.blog-page {
+  min-height: 100vh;
+  padding: 28px 18px 60px;
+}
+
+.blog-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 980px;
+  margin: 0 auto 18px;
+  gap: 12px;
+}
+
+.blog-back,
+.blog-raw {
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.06);
+  color: inherit;
+}
+
+.blog-status {
+  max-width: 980px;
+  margin: 0 auto;
+  opacity: 0.8;
+}
+
+.blog-error {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 18px;
+  border-radius: 14px;
+  background: rgba(255, 0, 0, 0.08);
+}
+
+.blog-article {
+  max-width: 980px;
+  margin: 0 auto;
+  line-height: 1.75;
+  font-size: 1.05rem;
+}
+
+.blog-article pre {
+  overflow-x: auto;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.06);
+}
+
+.blog-article code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
