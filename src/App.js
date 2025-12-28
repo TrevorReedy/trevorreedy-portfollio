@@ -34,24 +34,14 @@ const ICONS = [
   "tailwind.svg",
   "typescript.svg",
   "zig.svg",
+  "json.svg",
+  "jest.svg"
+
 ];
 
-/**
- * IMPORTANT:
- * Each project can now fetch its blog from its own GitHub repo.
- *
- * blog fields:
- * - owner: GitHub owner/org
- * - repo: repository name
- * - branch: usually "main"
- * - folder: folder path inside repo (ex: "content/blog")
- * - file: markdown filename (ex: "zigit.md")
- *
- * Route uses `slug` (unique per project) not the repo name.
- */
 export const PROJECTS = [
   {
-    slug: "zigit", // URL -> /blog/zigit
+    slug: "zigit", 
     name: "Zigit",
     description: "A zig based CLI tool for git automation for new users",
     technologies: ["Zig", "GIT"],
@@ -95,9 +85,10 @@ export const PROJECTS = [
 ];
 
 function Home() {
-    useEffect(() => {
+  useEffect(() => {
     document.title = "Trevor Reedy | Software Engineer";
   }, []);
+
   const containerRef = useRef(null);
 
   // UI state
@@ -185,6 +176,7 @@ function Home() {
     const World = Matter.World;
     const Bodies = Matter.Bodies;
     const Runner = Matter.Runner;
+    const Body = Matter.Body;
 
     while (container.firstChild) container.removeChild(container.firstChild);
 
@@ -266,9 +258,60 @@ function Home() {
     World.add(engine.world, boundaries);
     Runner.run(runner, engine);
 
+    // --- NEW: "settle back to 0 degrees" tracking ---
+    const lastMovingAt = new WeakMap();
+
+    // tweak these if you want different feel
+const STILL_MS = 800;        // wait a bit before correcting (try 800–2000)
+const LIN_EPS = 0.20;
+const ANG_EPS = 0.04;
+
+const MAX_TURN = 0.03;       // max radians/frame-ish feel (try 0.02–0.06)
+const TURN_GAIN = 0.08;      // how strongly it steers toward 0 (try 0.04–0.12)
+const ANG_DAMP = 0.90;       // general spin damping during correction (0.85–0.97)
+
+const ANGLE_SNAP = 0.01;     // when close enough, snap to 0
+    // ------------------------------------------------
+
     const updatePositions = () => {
-      newBodies.forEach(({ img, body }) => {
-        if (!img || !body) return;
+      const now = performance.now();
+
+
+newBodies.forEach(({ img, body }) => {
+  const speed   = Math.hypot(body.velocity.x, body.velocity.y);
+  const angSpeed = Math.abs(body.angularVelocity);
+
+  // mark last movement time
+  if (speed > LIN_EPS || angSpeed > ANG_EPS) lastMovingAt.set(body, now);
+  if (!lastMovingAt.has(body)) lastMovingAt.set(body, now);
+
+  const idleFor = now - lastMovingAt.get(body);
+
+  // only straighten when NOT in “falling” mode
+// normalize to [-PI, PI] so we always choose the shortest path to 0
+const TWO_PI = Math.PI * 2;
+let a = body.angle % TWO_PI;
+if (a > Math.PI) a -= TWO_PI;
+if (a < -Math.PI) a += TWO_PI;
+
+// if already basically upright, snap and stop
+if (Math.abs(a) < ANGLE_SNAP) {
+  Body.setAngle(body, 0);
+  Body.setAngularVelocity(body, 0);
+} else {
+  // steer toward 0 (closest direction) with a capped, slow turn speed
+  const desired = Math.max(-MAX_TURN, Math.min(MAX_TURN, -a * TURN_GAIN));
+
+  // smoothly blend current spin toward desired spin
+  const nextAV = body.angularVelocity * ANG_DAMP + desired;
+  Body.setAngularVelocity(body, nextAV);
+}
+
+
+  // --- your existing position/rotate code below ---
+  img.style.transform = `rotate(${body.angle}rad)`;
+
+        // -------------------------------------------------------
 
         const isZig = img.src.includes("zig.svg");
         const w = isZig ? 120 : 100;
@@ -336,8 +379,10 @@ function Home() {
           x: body.velocity.x + (Math.random() - 0.5) * 18,
           y: body.velocity.y + (Math.random() - 0.5) * 18,
         });
-        Body.setAngularVelocity(body, body.angularVelocity + (Math.random() - 0.5) * 0.3);
-      });
+        const added = (Math.random() - 0.5) * 0.08; // smaller impulse
+        const next = body.angularVelocity + added;
+        const cap = 0.25; // max spin magnitude
+        Body.setAngularVelocity(body, Math.max(-cap, Math.min(cap, next)));      });
 
       scrollTimeoutRef.current = setTimeout(() => {
         const engineNow = engineRef.current;
@@ -405,7 +450,6 @@ function Home() {
                     GitHub
                   </a>
 
-                  {/* Blog route */}
                   {project.blog && (
                     <Link to={`/blog/${project.slug}`} className="project-link blog">
                       Blog
@@ -486,7 +530,13 @@ function Home() {
 
                   <div className="form-row">
                     <label htmlFor="email">Email</label>
-                    <input id="email" name="email" type="email" placeholder="you@email.com" required />
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      placeholder="you@email.com"
+                      required
+                    />
                   </div>
 
                   <div className="form-row">
@@ -506,7 +556,6 @@ function Home() {
                 </form>
               </div>
             </div>
-
           </div>
         </div>
       </section>
