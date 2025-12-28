@@ -55,14 +55,14 @@ export const PROJECTS = [
     },
   },
   {
-    slug: "go-board-game",
-    name: "GO Board Game",
+    slug: "go-game-engine",
+    name: "GO Game Engine",
     description: "A graphical interface to play the game of GO with complete scoring",
     technologies: ["Java", "Swing"],
-    githubUrl: "https://github.com/TrevorReedy/GO_Board_Game_Java",
+    githubUrl: "https://github.com/TrevorReedy/GO_Game_Engine/tree/main",
     blog: {
       owner: "TrevorReedy",
-      repo: "GO_Board_Game_Java",
+      repo: "GO_Game_Engine",
       branch: "main",
       folder: "content/blog",
       file: "blog.md",
