@@ -4,6 +4,8 @@ import Matter from "matter-js";
 import "./App.css";
 import BlogPostPage from "./BlogPostPage.js";
 
+
+
 function slugify(str) {
   return String(str)
     .trim()
@@ -409,6 +411,11 @@ if (Math.abs(a) < ANGLE_SNAP) {
     };
   }, []);
 
+
+  function resetView(){
+    window.scrollTo(0, 0);
+  }
+
   return (
     <div className="App">
       <div className="icon-container" ref={containerRef}></div>
@@ -451,7 +458,7 @@ if (Math.abs(a) < ANGLE_SNAP) {
                   </a>
 
                   {project.blog && (
-                    <Link to={`/blog/${project.slug}`} className="project-link blog">
+                    <Link to={`/blog/${project.slug}`} onClick={resetView} className="project-link blog">
                       Blog
                     </Link>
                   )}
