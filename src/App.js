@@ -376,8 +376,8 @@ if (Math.abs(a) < ANGLE_SNAP) {
 
       bodies.forEach(({ body }) => {
         Body.setVelocity(body, {
-          x: body.velocity.x + (Math.random() - 0.5) * 18,
-          y: body.velocity.y + (Math.random() - 0.5) * 18,
+          x: body.velocity.x + (Math.random() - 0.5) * 8,
+          y: body.velocity.y + (Math.random() - 0.5) * 8,
         });
         const added = (Math.random() - 0.5) * 0.08; // smaller impulse
         const next = body.angularVelocity + added;

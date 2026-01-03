@@ -488,14 +488,16 @@ body {
 @media (max-width: 768px) {
   /* Smaller icons for mobile */
   .icon {
-    width: 60px !important;
-    height: 60px !important;
+    width: 40px !important;
+    height: 40px !important;
   }
   
   .icon[src*="zig.svg"] {
-    width: 80px !important;
-    height: 28px !important;
+    width: 50px !important;
+    height: 21px !important;
   }
+
+  
 
   /* Reduced drifting range for mobile */
   @keyframes driftAcrossMobile1 {
@@ -580,12 +582,12 @@ body {
 /* Extra small mobile devices */
 @media (max-width: 480px) {
   .icon {
-    width: 50px !important;
-    height: 50px !important;
+    width: 40px !important;
+    height: 40px !important;
   }
   
   .icon[src*="zig.svg"] {
-    width: 70px !important;
+    width: 40px !important;
     height: 25px !important;
   }
 
