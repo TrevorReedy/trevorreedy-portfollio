@@ -72,112 +72,55 @@ body {
   opacity: 0.9;
 }
 
-/* Continuous drifting animations across the screen */
-/* === LEAVING ALL ANIMATION LOGIC AS-IS === */
+
+/* ---------------------------------------------
+   VIEWPORT-PROPORTIONAL  DRIFT  (works for all sizes)
+---------------------------------------------- */
 @keyframes driftAcross1 {
-  0% { 
-    transform: translate(-200px, -150px) rotate(0deg) scale(1); 
-  }
-  20% { 
-    transform: translate(150px, -100px) rotate(90deg) scale(1.05); 
-  }
-  40% { 
-    transform: translate(300px, 100px) rotate(180deg) scale(1); 
-  }
-  60% { 
-    transform: translate(100px, 200px) rotate(270deg) scale(0.95); 
-  }
-  80% { 
-    transform: translate(-150px, 150px) rotate(360deg) scale(1.02); 
-  }
-  100% { 
-    transform: translate(-200px, -150px) rotate(720deg) scale(1); 
-  }
+  0%   { transform: translate(-20vw, -25vh) rotate(0deg) scale(1); }
+  20%  { transform: translate(30vw, -18vh) rotate(90deg) scale(1.05); }
+  40%  { transform: translate(60vw, 20vh) rotate(180deg) scale(1); }
+  60%  { transform: translate(20vw, 45vh) rotate(270deg) scale(0.95); }
+  80%  { transform: translate(-25vw, 35vh) rotate(360deg) scale(1.02); }
+  100% { transform: translate(-20vw, -25vh) rotate(720deg) scale(1); }
 }
 
 @keyframes driftAcross2 {
-  0% { 
-    transform: translate(250px, -200px) rotate(0deg) scale(1); 
-  }
-  25% { 
-    transform: translate(-100px, -50px) rotate(-120deg) scale(1.03); 
-  }
-  50% { 
-    transform: translate(-300px, 150px) rotate(-240deg) scale(0.97); 
-  }
-  75% { 
-    transform: translate(50px, 250px) rotate(-360deg) scale(1.01); 
-  }
-  100% { 
-    transform: translate(250px, -200px) rotate(-720deg) scale(1); 
-  }
+  0%   { transform: translate(65vw, -30vh) rotate(0deg) scale(1); }
+  25%  { transform: translate(-18vw, -10vh) rotate(-120deg) scale(1.03); }
+  50%  { transform: translate(-70vw, 30vh) rotate(-240deg) scale(0.97); }
+  75%  { transform: translate(10vw, 55vh) rotate(-360deg) scale(1.01); }
+  100% { transform: translate(65vw, -30vh) rotate(-720deg) scale(1); }
 }
 
 @keyframes driftAcross3 {
-  0% { 
-    transform: translate(-300px, 100px) rotate(0deg) scale(1); 
-  }
-  15% { 
-    transform: translate(-150px, -200px) rotate(180deg) scale(1.04); 
-  }
-  30% { 
-    transform: translate(200px, -150px) rotate(360deg) scale(0.96); 
-  }
-  45% { 
-    transform: translate(350px, 50px) rotate(540deg) scale(1.02); 
-  }
-  60% { 
-    transform: translate(100px, 300px) rotate(720deg) scale(0.98); 
-  }
-  75% { 
-    transform: translate(-250px, 200px) rotate(900deg) scale(1.03); 
-  }
-  90% { 
-    transform: translate(-350px, -100px) rotate(1080deg) scale(0.97); 
-  }
-  100% { 
-    transform: translate(-300px, 100px) rotate(1440deg) scale(1); 
-  }
+  0%   { transform: translate(-75vw, 18vh) rotate(0deg) scale(1); }
+  15%  { transform: translate(-30vw, -35vh) rotate(180deg) scale(1.04); }
+  30%  { transform: translate(45vw, -28vh) rotate(360deg) scale(0.96); }
+  45%  { transform: translate(80vw, 12vh) rotate(540deg) scale(1.02); }
+  60%  { transform: translate(25vw, 65vh) rotate(720deg) scale(0.98); }
+  75%  { transform: translate(-55vw, 50vh) rotate(900deg) scale(1.03); }
+  90%  { transform: translate(-80vw, -18vh) rotate(1080deg) scale(0.97); }
+  100% { transform: translate(-75vw, 18vh) rotate(1440deg) scale(1); }
 }
 
 @keyframes driftAcross4 {
-  0% { 
-    transform: translate(100px, 250px) rotate(0deg) scale(1); 
-  }
-  20% { 
-    transform: translate(300px, -50px) rotate(-180deg) scale(1.02); 
-  }
-  40% { 
-    transform: translate(-100px, -300px) rotate(-360deg) scale(0.98); 
-  }
-  60% { 
-    transform: translate(-350px, -150px) rotate(-540deg) scale(1.05); 
-  }
-  80% { 
-    transform: translate(-200px, 350px) rotate(-720deg) scale(0.95); 
-  }
-  100% { 
-    transform: translate(100px, 250px) rotate(-1080deg) scale(1); 
-  }
+  0%   { transform: translate(20vw, 55vh) rotate(0deg) scale(1); }
+  20%  { transform: translate(70vw, -12vh) rotate(-180deg) scale(1.02); }
+  40%  { transform: translate(-20vw, -70vh) rotate(-360deg) scale(0.98); }
+  60%  { transform: translate(-85vw, -32vh) rotate(-540deg) scale(1.05); }
+  80%  { transform: translate(-45vw, 80vh) rotate(-720deg) scale(0.95); }
+  100% { transform: translate(20vw, 55vh) rotate(-1080deg) scale(1); }
 }
 
 @keyframes driftAcross5 {
-  0% { 
-    transform: translate(-150px, -300px) rotate(0deg) scale(1); 
-  }
-  30% { 
-    transform: translate(350px, -200px) rotate(270deg) scale(1.03); 
-  }
-  60% { 
-    transform: translate(200px, 350px) rotate(540deg) scale(0.97); 
-  }
-  90% { 
-    transform: translate(-350px, 100px) rotate(810deg) scale(1.01); 
-  }
-  100% { 
-    transform: translate(-150px, -300px) rotate(1080deg) scale(1); 
-  }
+  0%   { transform: translate(-30vw, -70vh) rotate(0deg) scale(1); }
+  30%  { transform: translate(80vw, -45vh) rotate(270deg) scale(1.03); }
+  60%  { transform: translate(45vw, 80vh) rotate(540deg) scale(0.97); }
+  90%  { transform: translate(-80vw, 22vh) rotate(810deg) scale(1.01); }
+  100% { transform: translate(-30vw, -70vh) rotate(1080deg) scale(1); }
 }
+
 
 .floating {
   animation: driftAcross1 90s linear infinite;
@@ -493,11 +436,9 @@ body {
   }
   
   .icon[src*="zig.svg"] {
-    width: 50px !important;
+    width: 40px !important;
     height: 21px !important;
   }
-
-  
 
   /* Reduced drifting range for mobile */
   @keyframes driftAcrossMobile1 {
@@ -677,4 +618,38 @@ body {
   .icon.falling {
     filter: none !important;
   }
+}
+
+/* -------------------------------------------------
+   KEEP ICONS ON-SCREEN ON PHONES  (≤ 600 px)
+-------------------------------------------------- */
+@media (max-width: 600px) {
+  @keyframes driftAcrossMobile1 {
+    0%   { transform: translate(2vw, 4vh)  rotate(0deg)   scale(1); }
+    25%  { transform: translate(88vw, 10vh) rotate(90deg)  scale(1.05); }
+    50%  { transform: translate(75vw, 85vh) rotate(180deg) scale(1); }
+    75%  { transform: translate(5vw, 75vh) rotate(270deg) scale(0.95); }
+    100% { transform: translate(2vw, 4vh)  rotate(360deg)  scale(1); }
+  }
+
+  @keyframes driftAcrossMobile2 {
+    0%   { transform: translate(85vw, 5vh)  rotate(0deg)   scale(1); }
+    33%  { transform: translate(8vw, 30vh) rotate(-120deg) scale(1.03); }
+    66%  { transform: translate(80vw, 80vh) rotate(-240deg) scale(0.97); }
+    100% { transform: translate(85vw, 5vh)  rotate(-360deg) scale(1); }
+  }
+
+  /* keep the existing assignment rules */
+  .floating {
+    animation-name: driftAcrossMobile1 !important;
+    animation-duration: 60s !important;
+  }
+  .floating:nth-child(odd) {
+    animation-name: driftAcrossMobile2 !important;
+    animation-duration: 70s !important;
+  }
+  .floating:nth-child(3n)  { animation-duration: 80s !important; }
+  .floating:nth-child(4n)  { animation-name: driftAcrossMobile1 !important; animation-duration: 120s !important; }
+  .floating:nth-child(5n)  { animation-name: driftAcrossMobile2 !important; animation-duration: 95s  !important; }
+  .floating:nth-child(7n)  { animation-duration: 110s !important; }
 }

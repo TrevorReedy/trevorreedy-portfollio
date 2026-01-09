@@ -372,7 +372,7 @@ if (Math.abs(a) < ANGLE_SNAP) {
       engine.gravity.y = 0;
 
       bodies.forEach(({ body }) => {
-        const kick = 5;                      // was 8
+        const kick = 4;                      // was 8
         Body.setVelocity(body, {
           x: Math.max(-kick, Math.min(kick, body.velocity.x + (Math.random() - 0.5) * kick)),
           y: Math.max(-kick, Math.min(kick, body.velocity.y + (Math.random() - 0.5) * kick)),
