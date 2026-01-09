@@ -323,13 +323,8 @@ if (Math.abs(a) < ANGLE_SNAP) {
         img.style.top = `${body.position.y - h / 2}px`;
         img.style.transform = `rotate(${body.angle}rad)`;
 
-        if (isFallingRef.current) {
-          const velocity = Math.sqrt(body.velocity.x ** 2 + body.velocity.y ** 2);
-          const blurAmount = Math.min(velocity * 0.5 * 0.3, 10);
-          img.style.filter = `blur(${blurAmount}px) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))`;
-        } else {
-          img.style.filter = "drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))";
-        }
+        img.style.filter = "drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))";
+
       });
 
       requestAnimationFrame(updatePositions);
@@ -377,14 +372,16 @@ if (Math.abs(a) < ANGLE_SNAP) {
       engine.gravity.y = 0;
 
       bodies.forEach(({ body }) => {
+        const kick = 5;                      // was 8
         Body.setVelocity(body, {
-          x: body.velocity.x + (Math.random() - 0.5) * 8,
-          y: body.velocity.y + (Math.random() - 0.5) * 8,
+          x: Math.max(-kick, Math.min(kick, body.velocity.x + (Math.random() - 0.5) * kick)),
+          y: Math.max(-kick, Math.min(kick, body.velocity.y + (Math.random() - 0.5) * kick)),
         });
-        const added = (Math.random() - 0.5) * 0.08; // smaller impulse
-        const next = body.angularVelocity + added;
-        const cap = 0.25; // max spin magnitude
-        Body.setAngularVelocity(body, Math.max(-cap, Math.min(cap, next)));      });
+        const added = (Math.random() - 0.5) * 0.03; // was 0.08
+        const cap = 0.12;                             // was 0.25
+        Body.setAngularVelocity(body, Math.max(-cap, Math.min(cap, body.angularVelocity + added)));
+
+    });
 
       scrollTimeoutRef.current = setTimeout(() => {
         const engineNow = engineRef.current;

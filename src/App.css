@@ -662,3 +662,19 @@ body {
 .blog-article code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
+
+/* NEW: cheap motion-blur while scrolling */
+.icon.falling {
+  filter: blur(1.5px) drop-shadow(0 4px 6px rgba(15,23,42,.25));
+}
+
+/* respect user motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .icon {
+    animation: none !important;
+    transition: none !important;
+  }
+  .icon.falling {
+    filter: none !important;
+  }
+}
