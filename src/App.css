@@ -18,8 +18,8 @@ body {
 
 /* Default desktop sizes */
 .icon {
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
 }
 
 .icon[src*="zig.svg"] {
