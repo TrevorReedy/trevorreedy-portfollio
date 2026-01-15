@@ -73,7 +73,7 @@ export const PROJECTS = [
   {
     slug: "mobile-sentrix-price-calc",
     name: "Mobile Sentrix Price Calculator",
-    description: "A in house tool for CPR to use to calculate labor prices and to ",
+    description: "A in house tool for CPR to use to calculate labor prices and to give reliable, fast, knowledge based quotes",
     technologies: ["Javascript", "Jest"],
     githubUrl: "https://github.com/TrevorReedy/mobile_sentrix-price-tool",
     blog: {
@@ -372,7 +372,7 @@ if (Math.abs(a) < ANGLE_SNAP) {
       engine.gravity.y = 0;
 
       bodies.forEach(({ body }) => {
-        const kick = 5;                      // was 8
+        const kick = 5;                      // was 8 (high)
         Body.setVelocity(body, {
           x: Math.max(-kick, Math.min(kick, body.velocity.x + (Math.random() - 0.5) * kick)),
           y: Math.max(-kick, Math.min(kick, body.velocity.y + (Math.random() - 0.5) * kick)),
