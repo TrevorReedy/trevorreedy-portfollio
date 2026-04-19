@@ -205,8 +205,8 @@ function Home() {
       
       icon.style.left = `${pos.x - width / 2}px`;
       icon.style.top = `${pos.y - height / 2}px`;
-      icon.style.width = `${width}px`;
-      icon.style.height = `${height}px`;
+      // icon.style.width = `${width}px`;
+      // icon.style.height = `${height}px`;
 
       container.appendChild(icon);
 
