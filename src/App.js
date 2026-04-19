@@ -4,14 +4,14 @@ import Matter from "matter-js";
 import "./App.css";
 import BlogPostPage from "./BlogPostPage.js";
 
-function slugify(str) {
-  return String(str)
-    .trim()
-    .toLowerCase()
-    .replace(/['"]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-}
+// function slugify(str) {
+//   return String(str)
+//     .trim()
+//     .toLowerCase()
+//     .replace(/['"]/g, "")
+//     .replace(/[^a-z0-9]+/g, "-")
+//     .replace(/(^-|-$)/g, "");
+// }
 
 const ICONS = [
   "css.svg",
@@ -131,6 +131,9 @@ function Home() {
               x = width - margin - Math.random() * (width * 0.3);
               y = height - margin - Math.random() * (height * 0.3);
               break;
+            default:
+              x = margin + Math.random() * (width - 2 * margin);
+              y = margin + Math.random() * (height - 2 * margin);
           }
         } else if (i % 5 === 0) {
           x = width * 0.2 + Math.random() * (width * 0.6);
@@ -266,7 +269,7 @@ function Home() {
 
     const lastMovingAt = new WeakMap();
 
-    const STILL_MS = 800;
+    // const STILL_MS = 800;
     const LIN_EPS = 0.20;
     const ANG_EPS = 0.04;
     const MAX_TURN = 0.03;
@@ -284,7 +287,7 @@ function Home() {
         if (speed > LIN_EPS || angSpeed > ANG_EPS) lastMovingAt.set(body, now);
         if (!lastMovingAt.has(body)) lastMovingAt.set(body, now);
 
-        const idleFor = now - lastMovingAt.get(body);
+        // const idleFor = now - lastMovingAt.get(body);
 
         const TWO_PI = Math.PI * 2;
         let a = body.angle % TWO_PI;
