@@ -428,97 +428,7 @@ body {
 }
 
 /* Mobile tweaks */
-@media (max-width: 768px) {
-  /* Smaller icons for mobile */
-  .icon {
-    width: 40px !important;
-    height: 40px !important;
-  }
-  
-  .icon[src*="zig.svg"] {
-    width: 40px !important;
-    height: 21px !important;
-  }
-
-  /* Reduced drifting range for mobile */
-  @keyframes driftAcrossMobile1 {
-    0% { 
-      transform: translate(-100px, -80px) rotate(0deg) scale(1); 
-    }
-    20% { 
-      transform: translate(80px, -60px) rotate(90deg) scale(1.05); 
-    }
-    40% { 
-      transform: translate(150px, 60px) rotate(180deg) scale(1); 
-    }
-    60% { 
-      transform: translate(60px, 120px) rotate(270deg) scale(0.95); 
-    }
-    80% { 
-      transform: translate(-80px, 80px) rotate(360deg) scale(1.02); 
-    }
-    100% { 
-      transform: translate(-100px, -80px) rotate(720deg) scale(1); 
-    }
-  }
-
-  @keyframes driftAcrossMobile2 {
-    0% { 
-      transform: translate(120px, -100px) rotate(0deg) scale(1); 
-    }
-    25% { 
-      transform: translate(-60px, -30px) rotate(-120deg) scale(1.03); 
-    }
-    50% { 
-      transform: translate(-150px, 80px) rotate(-240deg) scale(0.97); 
-    }
-    75% { 
-      transform: translate(30px, 150px) rotate(-360deg) scale(1.01); 
-    }
-    100% { 
-      transform: translate(120px, -100px) rotate(-720deg) scale(1); 
-    }
-  }
-
-  .floating {
-    animation-name: driftAcrossMobile1 !important;
-    animation-duration: 60s !important;
-  }
-
-  .floating:nth-child(odd) {
-    animation-name: driftAcrossMobile2 !important;
-    animation-duration: 70s !important;
-  }
-
-  .floating:nth-child(3n) {
-    animation-duration: 80s !important;
-  }
-
-  .contact-content {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-
-  .projects-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .section-content h2 {
-    font-size: 2.5rem;
-  }
-
-  .App-header h1 {
-    font-size: 3rem;
-  }
-
-  .App-header p {
-    font-size: 1.4rem;
-  }
-
-  .contact-form-card {
-    max-width: 100%;
-  }
-}
+/*  */
 
 /* Extra small mobile devices */
 @media (max-width: 480px) {
@@ -606,7 +516,7 @@ body {
 
 /* NEW: cheap motion-blur while scrolling */
 .icon.falling {
-  filter: blur(1.5px) drop-shadow(0 4px 6px rgba(15,23,42,.25));
+  filter: blur(.5px) drop-shadow(0 4px 6px rgba(15,23,42,.25));
 }
 
 /* respect user motion preference */
@@ -652,4 +562,32 @@ body {
   .floating:nth-child(4n)  { animation-name: driftAcrossMobile1 !important; animation-duration: 120s !important; }
   .floating:nth-child(5n)  { animation-name: driftAcrossMobile2 !important; animation-duration: 95s  !important; }
   .floating:nth-child(7n)  { animation-duration: 110s !important; }
+}
+
+/* Loading indicator styles - replaces inline styles */
+.loading-indicator {
+  margin-top: 2rem;
+  font-size: 1.1rem;
+  opacity: 0.8;
+}
+
+/* Ensure icons have consistent base styling without inline overrides */
+.icon {
+  position: absolute;
+  transition: filter 0.2s ease-out;
+  filter: drop-shadow(0 6px 14px rgba(15, 23, 42, 0.25));
+  will-change: transform, filter;
+  opacity: 1; /* was inline */
+}
+
+/* Remove the duplicate .icon rule that had width/height */
+/* Keep only the zig.svg specific override */
+.icon[src*="zig.svg"] {
+  width: 120px;
+  height: 42px;
+}
+
+/* Ensure drop-shadow consistency */
+.icon {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }

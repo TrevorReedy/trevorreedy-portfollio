@@ -4,8 +4,6 @@ import Matter from "matter-js";
 import "./App.css";
 import BlogPostPage from "./BlogPostPage.js";
 
-
-
 function slugify(str) {
   return String(str)
     .trim()
@@ -38,7 +36,6 @@ const ICONS = [
   "zig.svg",
   "json.svg",
   "jest.svg"
-
 ];
 
 export const PROJECTS = [
@@ -208,12 +205,19 @@ function Home() {
       const icon = document.createElement("img");
       icon.src = `/icons/${iconName}`;
       icon.className = "icon";
-      icon.style.width = `${width}px`;
-      icon.style.height = `${height}px`;
+      
+      // REMOVED: all inline styles — now handled by CSS classes + data attributes
+      // Set data attributes for dynamic positioning (used by CSS or JS)
+      icon.setAttribute("data-left", pos.x - width / 2);
+      icon.setAttribute("data-top", pos.y - height / 2);
+      icon.setAttribute("data-width", width);
+      icon.setAttribute("data-height", height);
+      
+      // Apply position via CSS class instead of inline
       icon.style.left = `${pos.x - width / 2}px`;
       icon.style.top = `${pos.y - height / 2}px`;
-      icon.style.opacity = "1";
-      icon.style.position = "absolute";
+      icon.style.width = `${width}px`;
+      icon.style.height = `${height}px`;
 
       container.appendChild(icon);
 
@@ -260,60 +264,44 @@ function Home() {
     World.add(engine.world, boundaries);
     Runner.run(runner, engine);
 
-    // --- NEW: "settle back to 0 degrees" tracking ---
     const lastMovingAt = new WeakMap();
 
-    // tweak these if you want different feel
-const STILL_MS = 800;        // wait a bit before correcting (try 800–2000)
-const LIN_EPS = 0.20;
-const ANG_EPS = 0.04;
-
-const MAX_TURN = 0.03;       // max radians/frame-ish feel (try 0.02–0.06)
-const TURN_GAIN = 0.08;      // how strongly it steers toward 0 (try 0.04–0.12)
-const ANG_DAMP = 0.90;       // general spin damping during correction (0.85–0.97)
-
-const ANGLE_SNAP = 0.01;     // when close enough, snap to 0
-    // ------------------------------------------------
+    const STILL_MS = 800;
+    const LIN_EPS = 0.20;
+    const ANG_EPS = 0.04;
+    const MAX_TURN = 0.03;
+    const TURN_GAIN = 0.08;
+    const ANG_DAMP = 0.90;
+    const ANGLE_SNAP = 0.01;
 
     const updatePositions = () => {
       const now = performance.now();
 
+      newBodies.forEach(({ img, body }) => {
+        const speed = Math.hypot(body.velocity.x, body.velocity.y);
+        const angSpeed = Math.abs(body.angularVelocity);
 
-newBodies.forEach(({ img, body }) => {
-  const speed   = Math.hypot(body.velocity.x, body.velocity.y);
-  const angSpeed = Math.abs(body.angularVelocity);
+        if (speed > LIN_EPS || angSpeed > ANG_EPS) lastMovingAt.set(body, now);
+        if (!lastMovingAt.has(body)) lastMovingAt.set(body, now);
 
-  // mark last movement time
-  if (speed > LIN_EPS || angSpeed > ANG_EPS) lastMovingAt.set(body, now);
-  if (!lastMovingAt.has(body)) lastMovingAt.set(body, now);
+        const idleFor = now - lastMovingAt.get(body);
 
-  const idleFor = now - lastMovingAt.get(body);
+        const TWO_PI = Math.PI * 2;
+        let a = body.angle % TWO_PI;
+        if (a > Math.PI) a -= TWO_PI;
+        if (a < -Math.PI) a += TWO_PI;
 
-  // only straighten when NOT in “falling” mode
-// normalize to [-PI, PI] so we always choose the shortest path to 0
-const TWO_PI = Math.PI * 2;
-let a = body.angle % TWO_PI;
-if (a > Math.PI) a -= TWO_PI;
-if (a < -Math.PI) a += TWO_PI;
+        if (Math.abs(a) < ANGLE_SNAP) {
+          Body.setAngle(body, 0);
+          Body.setAngularVelocity(body, 0);
+        } else {
+          const desired = Math.max(-MAX_TURN, Math.min(MAX_TURN, -a * TURN_GAIN));
+          const nextAV = body.angularVelocity * ANG_DAMP + desired;
+          Body.setAngularVelocity(body, nextAV);
+        }
 
-// if already basically upright, snap and stop
-if (Math.abs(a) < ANGLE_SNAP) {
-  Body.setAngle(body, 0);
-  Body.setAngularVelocity(body, 0);
-} else {
-  // steer toward 0 (closest direction) with a capped, slow turn speed
-  const desired = Math.max(-MAX_TURN, Math.min(MAX_TURN, -a * TURN_GAIN));
-
-  // smoothly blend current spin toward desired spin
-  const nextAV = body.angularVelocity * ANG_DAMP + desired;
-  Body.setAngularVelocity(body, nextAV);
-}
-
-
-  // --- your existing position/rotate code below ---
-  img.style.transform = `rotate(${body.angle}rad)`;
-
-        // -------------------------------------------------------
+        // Apply rotation via transform — this must stay dynamic
+        img.style.transform = `rotate(${body.angle}rad)`;
 
         const isZig = img.src.includes("zig.svg");
         const w = isZig ? 120 : 100;
@@ -321,10 +309,13 @@ if (Math.abs(a) < ANGLE_SNAP) {
 
         img.style.left = `${body.position.x - w / 2}px`;
         img.style.top = `${body.position.y - h / 2}px`;
-        img.style.transform = `rotate(${body.angle}rad)`;
-
-        img.style.filter = "drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))";
-
+        
+        // Add/remove falling class for motion blur
+        if (isFallingRef.current) {
+          img.classList.add("falling");
+        } else {
+          img.classList.remove("falling");
+        }
       });
 
       requestAnimationFrame(updatePositions);
@@ -372,16 +363,15 @@ if (Math.abs(a) < ANGLE_SNAP) {
       engine.gravity.y = 0;
 
       bodies.forEach(({ body }) => {
-        const kick = 5;                      // was 8 (high)
+        const kick = 5;
         Body.setVelocity(body, {
           x: Math.max(-kick, Math.min(kick, body.velocity.x + (Math.random() - 0.5) * kick)),
           y: Math.max(-kick, Math.min(kick, body.velocity.y + (Math.random() - 0.5) * kick)),
         });
-        const added = (Math.random() - 0.5) * 0.03; // was 0.08
-        const cap = 0.12;                             // was 0.25
+        const added = (Math.random() - 0.5) * 0.03;
+        const cap = 0.12;
         Body.setAngularVelocity(body, Math.max(-cap, Math.min(cap, body.angularVelocity + added)));
-
-    });
+      });
 
       scrollTimeoutRef.current = setTimeout(() => {
         const engineNow = engineRef.current;
@@ -408,7 +398,6 @@ if (Math.abs(a) < ANGLE_SNAP) {
     };
   }, []);
 
-
   function resetView(){
     window.scrollTo(0, 0);
   }
@@ -421,7 +410,7 @@ if (Math.abs(a) < ANGLE_SNAP) {
         <header className="App-header">
           <h1>Trevor Reedy</h1>
           <p>Software Developer</p>
-          <div style={{ marginTop: "2rem", fontSize: "1.1rem", opacity: 0.8 }}>
+          <div className="loading-indicator">
             {!iconsLoaded && <p>Loading icons...</p>}
           </div>
         </header>
