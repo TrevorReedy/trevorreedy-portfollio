@@ -4,14 +4,7 @@ import Matter from "matter-js";
 import "./App.css";
 import BlogPostPage from "./BlogPostPage.js";
 
-// function slugify(str) {
-//   return String(str)
-//     .trim()
-//     .toLowerCase()
-//     .replace(/['"]/g, "")
-//     .replace(/[^a-z0-9]+/g, "-")
-//     .replace(/(^-|-$)/g, "");
-// }
+// Removed slugify since it's not used
 
 const ICONS = [
   "css.svg",
@@ -134,6 +127,7 @@ function Home() {
             default:
               x = margin + Math.random() * (width - 2 * margin);
               y = margin + Math.random() * (height - 2 * margin);
+              break;
           }
         } else if (i % 5 === 0) {
           x = width * 0.2 + Math.random() * (width * 0.6);
@@ -209,14 +203,6 @@ function Home() {
       icon.src = `/icons/${iconName}`;
       icon.className = "icon";
       
-      // REMOVED: all inline styles — now handled by CSS classes + data attributes
-      // Set data attributes for dynamic positioning (used by CSS or JS)
-      icon.setAttribute("data-left", pos.x - width / 2);
-      icon.setAttribute("data-top", pos.y - height / 2);
-      icon.setAttribute("data-width", width);
-      icon.setAttribute("data-height", height);
-      
-      // Apply position via CSS class instead of inline
       icon.style.left = `${pos.x - width / 2}px`;
       icon.style.top = `${pos.y - height / 2}px`;
       icon.style.width = `${width}px`;
@@ -269,7 +255,6 @@ function Home() {
 
     const lastMovingAt = new WeakMap();
 
-    // const STILL_MS = 800;
     const LIN_EPS = 0.20;
     const ANG_EPS = 0.04;
     const MAX_TURN = 0.03;
@@ -287,8 +272,6 @@ function Home() {
         if (speed > LIN_EPS || angSpeed > ANG_EPS) lastMovingAt.set(body, now);
         if (!lastMovingAt.has(body)) lastMovingAt.set(body, now);
 
-        // const idleFor = now - lastMovingAt.get(body);
-
         const TWO_PI = Math.PI * 2;
         let a = body.angle % TWO_PI;
         if (a > Math.PI) a -= TWO_PI;
@@ -303,7 +286,6 @@ function Home() {
           Body.setAngularVelocity(body, nextAV);
         }
 
-        // Apply rotation via transform — this must stay dynamic
         img.style.transform = `rotate(${body.angle}rad)`;
 
         const isZig = img.src.includes("zig.svg");
@@ -313,7 +295,6 @@ function Home() {
         img.style.left = `${body.position.x - w / 2}px`;
         img.style.top = `${body.position.y - h / 2}px`;
         
-        // Add/remove falling class for motion blur
         if (isFallingRef.current) {
           img.classList.add("falling");
         } else {
@@ -326,6 +307,9 @@ function Home() {
 
     updatePositions();
 
+    // Store container ref locally for cleanup
+    const currentContainer = container;
+    
     return () => {
       if (runnerRef.current) {
         Matter.Runner.stop(runnerRef.current);
@@ -336,9 +320,9 @@ function Home() {
         Matter.Engine.clear(engineRef.current);
         engineRef.current = null;
       }
-      if (containerRef.current) {
-        while (containerRef.current.firstChild) {
-          containerRef.current.removeChild(containerRef.current.firstChild);
+      if (currentContainer) {
+        while (currentContainer.firstChild) {
+          currentContainer.removeChild(currentContainer.firstChild);
         }
       }
       bodiesRef.current = [];
