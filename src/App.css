@@ -22,8 +22,8 @@ body {
 /* SINGLE SOURCE OF TRUTH for icons */
 .icon {
   position: absolute;
-  width: 90px;
-  height: 90px;
+  width: 150px;
+  height: 150px;
   transition: filter 0.2s ease-out;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
   will-change: transform, left, top;
