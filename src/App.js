@@ -4,8 +4,6 @@ import Matter from "matter-js";
 import "./App.css";
 import BlogPostPage from "./BlogPostPage.js";
 
-// Removed slugify since it's not used
-
 const ICONS = [
   "css.svg",
   "django.svg",
@@ -83,10 +81,8 @@ function Home() {
 
   const containerRef = useRef(null);
 
-  // UI state
   const [iconsLoaded, setIconsLoaded] = useState(false);
 
-  // Refs for physics + scroll
   const engineRef = useRef(null);
   const runnerRef = useRef(null);
   const bodiesRef = useRef([]);
@@ -94,6 +90,11 @@ function Home() {
 
   const scrollTimeoutRef = useRef(null);
   const lastScrollYRef = useRef(0);
+
+  // Check if device is mobile
+  const isMobile = () => {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+  };
 
   const calculateOrganicPositions = (count, width, height) => {
     const positions = [];
@@ -178,6 +179,7 @@ function Home() {
 
     const cw = container.offsetWidth;
     const ch = container.offsetHeight;
+    const mobile = isMobile();
 
     const positions = calculateOrganicPositions(ICONS.length, cw, ch);
 
@@ -190,9 +192,9 @@ function Home() {
     const newBodies = [];
 
     ICONS.forEach((iconName, index) => {
-      const isMobile = cw < 600;
+      const isMobileDevice = cw < 600;
 
-      const scale = isMobile ? 0.6 : 1;
+      const scale = isMobileDevice ? 0.6 : 1;
       const width = 80 * scale;
       const height = 80 * scale;
       const radius = 40 * scale;
@@ -205,18 +207,33 @@ function Home() {
       
       icon.style.left = `${pos.x - width / 2}px`;
       icon.style.top = `${pos.y - height / 2}px`;
-      // icon.style.width = `${width}px`;
-      // icon.style.height = `${height}px`;
 
       container.appendChild(icon);
 
-      const body = Bodies.circle(pos.x, pos.y, radius, {
-        restitution: 0.8,
-        frictionAir: 0.035,
-        friction: 0.0005,
-        density: 0.001,
-        render: { visible: false },
-      });
+      let body;
+      if (mobile) {
+        // On mobile: enable collisions with walls but not with other bodies
+        // We do this by setting collisionFilter to only collide with walls
+        body = Bodies.circle(pos.x, pos.y, radius, {
+          restitution: 0.6,
+          frictionAir: 0.035,
+          friction: 0.0005,
+          density: 0.001,
+          collisionFilter: {
+            category: 0x0001,
+            mask: 0x0002, // Only collide with walls (category 0x0002)
+          },
+          render: { visible: false },
+        });
+      } else {
+        body = Bodies.circle(pos.x, pos.y, radius, {
+          restitution: 0.8,
+          frictionAir: 0.035,
+          friction: 0.0005,
+          density: 0.001,
+          render: { visible: false },
+        });
+      }
 
       World.add(engine.world, body);
       newBodies.push({ img: icon, body, originalPosition: { x: pos.x, y: pos.y } });
@@ -232,25 +249,32 @@ function Home() {
     World.add(engine.world, heroBody);
 
     const wallThickness = 100;
+    // Assign category 0x0002 to walls so mobile bodies can collide with them
     const boundaries = [
       Bodies.rectangle(cw / 2, ch + wallThickness / 2, cw * 2, wallThickness, {
         isStatic: true,
+        collisionFilter: { category: 0x0002 },
         render: { visible: false },
       }),
       Bodies.rectangle(cw / 2, -wallThickness / 2, cw * 2, wallThickness, {
         isStatic: true,
+        collisionFilter: { category: 0x0002 },
         render: { visible: false },
       }),
       Bodies.rectangle(-wallThickness / 2, ch / 2, wallThickness, ch * 2, {
         isStatic: true,
+        collisionFilter: { category: 0x0002 },
         render: { visible: false },
       }),
       Bodies.rectangle(cw + wallThickness / 2, ch / 2, wallThickness, ch * 2, {
         isStatic: true,
+        collisionFilter: { category: 0x0002 },
         render: { visible: false },
       }),
     ];
     World.add(engine.world, boundaries);
+    
+    // Run physics on both mobile and desktop
     Runner.run(runner, engine);
 
     const lastMovingAt = new WeakMap();
@@ -307,7 +331,6 @@ function Home() {
 
     updatePositions();
 
-    // Store container ref locally for cleanup
     const currentContainer = container;
     
     return () => {
