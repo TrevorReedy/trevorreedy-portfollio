@@ -72,6 +72,20 @@ export const PROJECTS = [
       file: "blog.md",
     },
   },
+    {
+    slug: "the-finals-combat-simulator",
+    name: "The Finals FPS Combat Simulator",
+    description: "A simulator for the FPS game The Finals to help players understand the complex combat mechanics and optimize their strategies",
+    technologies: ["Javascript", "Jest"],
+    githubUrl: "https://github.com/TrevorReedy/FinalsCombatSim",
+    blog: {
+      owner: "TrevorReedy",
+      repo: "mobile_sentrix-price-tool",
+      branch: "main",
+      folder: "content/blog",
+      file: "blog.md",
+    },
+  },
 ];
 
 function Home() {
