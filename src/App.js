@@ -80,7 +80,7 @@ export const PROJECTS = [
     githubUrl: "https://github.com/TrevorReedy/FinalsCombatSim",
     blog: {
       owner: "TrevorReedy",
-      repo: "mobile_sentrix-price-tool",
+      repo: "FinalsCombatSim",
       branch: "main",
       folder: "content/blog",
       file: "blog.md",
