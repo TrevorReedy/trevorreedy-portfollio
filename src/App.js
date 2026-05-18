@@ -158,7 +158,14 @@ function Home() {
     return 5;
   };
 
-  const buildEvenIconRows = (container, iconNames, iconsPerRow) => {
+  const getIconSize = (containerWidth, iconsPerRow) => {
+  const padding = containerWidth * 0.12; // matches 6vw each side in CSS
+  const gapTotal = (iconsPerRow - 1) * 16 ; // ~16px gap between icons
+  const size = (containerWidth - padding - gapTotal) / (iconsPerRow + 5);
+    return Math.max(48, Math.min(160, size));
+  };
+
+  const buildEvenIconRows = (container, iconNames, iconsPerRow, iconSize) => {
     const iconElements = [];
 
     for (let i = 0; i < iconNames.length; i += iconsPerRow) {
@@ -170,7 +177,18 @@ function Home() {
       rowIcons.forEach((iconName) => {
         const icon = document.createElement("img");
         icon.src = `/icons/${iconName}`;
+        icon.title = iconName.replace(".svg", "");
         icon.className = "icon icon-layout-probe";
+
+        // Dynamic size — overrides the CSS constant via higher specificity
+        if (iconName === "zig.svg") {
+          icon.style.width = `${Math.round(iconSize * 2.86)}px`;
+          icon.style.height = `${iconSize * 0.35}px`;
+        } else {
+          icon.style.width = `${iconSize}px`;
+          icon.style.height = `${iconSize}px`;
+        }
+
         row.appendChild(icon);
         iconElements.push({ iconName, img: icon });
       });
@@ -197,7 +215,8 @@ function Home() {
     const ch = container.offsetHeight;
     const mobile = isMobile();
     const iconsPerRow = getIconsPerRow(cw);
-    const iconElements = buildEvenIconRows(container, ICONS, iconsPerRow);
+    const iconSize = getIconSize(cw, iconsPerRow);
+    const iconElements = buildEvenIconRows(container, ICONS, iconsPerRow, iconSize);
     const containerRect = container.getBoundingClientRect();
 
     const positionedIcons = iconElements.map(({ iconName, img }) => {

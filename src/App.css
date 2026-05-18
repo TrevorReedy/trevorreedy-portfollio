@@ -32,7 +32,7 @@ body {
 }
 
 /* SINGLE SOURCE OF TRUTH for icons */
-.icon {
+/* .icon {
   position: absolute;
   width: 120px !important;
   height: 120px !important;
@@ -40,7 +40,17 @@ body {
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
   will-change: transform, translate, left, top;
   pointer-events: none;
+} */
+
+.icon {
+  position: absolute;
+  /* width/height now set dynamically in JS */
+  transition: filter 0.2s ease-out;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+  will-change: transform, translate, left, top;
+  pointer-events: none;
 }
+
 
 .icon-layout-probe {
   position: static;
