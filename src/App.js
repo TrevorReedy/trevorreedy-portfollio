@@ -195,10 +195,10 @@ function Home() {
         // We do this by setting collisionFilter to only collide with walls
         body = Bodies.circle(pos.x, pos.y, radius, {
           // restitution is lower on mobile to reduce bouncing and make it feel more grounded
-          restitution: 1.2,
-          frictionAir: 0.005,
-          friction: 0.005,
-          density: 0.05,
+          restitution: 0.9,
+          frictionAir: 0.05,
+          friction: 0.0005,
+          density: 0.08,
           collisionFilter: {
             category: 0x0001,
             mask: 0x0002, // Only collide with walls (category 0x0002)
