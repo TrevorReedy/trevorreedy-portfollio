@@ -110,73 +110,33 @@ function Home() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
   };
 
-  const calculateOrganicPositions = (count, width, height) => {
-    const positions = [];
-    const margin = 80;
+  const getIconsPerRow = (width) => {
+    if (width < 480) return 3;
+    if (width < 900) return 4;
+    return 5;
+  };
 
-    for (let i = 0; i < count; i++) {
-      let attempts = 0;
-      let validPosition = false;
-      let x, y;
+  const buildEvenIconRows = (container, iconNames, iconsPerRow) => {
+    const iconElements = [];
 
-      while (!validPosition && attempts < 100) {
-        if (i % 3 === 0) {
-          const corner = Math.floor(Math.random() * 4);
-          switch (corner) {
-            case 0:
-              x = margin + Math.random() * (width * 0.3);
-              y = margin + Math.random() * (height * 0.3);
-              break;
-            case 1:
-              x = width - margin - Math.random() * (width * 0.3);
-              y = margin + Math.random() * (height * 0.3);
-              break;
-            case 2:
-              x = margin + Math.random() * (width * 0.3);
-              y = height - margin - Math.random() * (height * 0.3);
-              break;
-            case 3:
-              x = width - margin - Math.random() * (width * 0.3);
-              y = height - margin - Math.random() * (height * 0.3);
-              break;
-            default:
-              x = margin + Math.random() * (width - 2 * margin);
-              y = margin + Math.random() * (height - 2 * margin);
-              break;
-          }
-        } else if (i % 5 === 0) {
-          x = width * 0.2 + Math.random() * (width * 0.6);
-          y = height * 0.2 + Math.random() * (height * 0.6);
-        } else {
-          x = margin + Math.random() * (width - 2 * margin);
-          y = margin + Math.random() * (height - 2 * margin);
-        }
+    for (let i = 0; i < iconNames.length; i += iconsPerRow) {
+      const row = document.createElement("div");
+      row.className = "icon-row";
 
-        validPosition = true;
-        for (const existingPos of positions) {
-          const distance = Math.sqrt(
-            Math.pow(x - existingPos.x, 2) + Math.pow(y - existingPos.y, 2)
-          );
-          if (distance < 120) {
-            validPosition = false;
-            break;
-          }
-        }
+      const rowIcons = iconNames.slice(i, i + iconsPerRow);
 
-        if (x < margin || x > width - margin || y < margin || y > height - margin) {
-          validPosition = false;
-        }
-
-        attempts++;
-      }
-
-      positions.push({
-        x: Math.max(margin, Math.min(width - margin, x)),
-        y: Math.max(margin, Math.min(height - margin, y)),
+      rowIcons.forEach((iconName) => {
+        const icon = document.createElement("img");
+        icon.src = `/icons/${iconName}`;
+        icon.className = "icon icon-layout-probe";
+        row.appendChild(icon);
+        iconElements.push({ iconName, img: icon });
       });
+
+      container.appendChild(row);
     }
 
-    return positions;
+    return iconElements;
   };
 
   useEffect(() => {
@@ -194,8 +154,24 @@ function Home() {
     const cw = container.offsetWidth;
     const ch = container.offsetHeight;
     const mobile = isMobile();
+    const iconsPerRow = getIconsPerRow(cw);
+    const iconElements = buildEvenIconRows(container, ICONS, iconsPerRow);
+    const containerRect = container.getBoundingClientRect();
 
-    const positions = calculateOrganicPositions(ICONS.length, cw, ch);
+    const positionedIcons = iconElements.map(({ iconName, img }) => {
+      const rect = img.getBoundingClientRect();
+
+      return {
+        iconName,
+        img,
+        pos: {
+          x: rect.left - containerRect.left + rect.width / 2,
+          y: rect.top - containerRect.top + rect.height / 2,
+        },
+        visualWidth: rect.width,
+        visualHeight: rect.height,
+      };
+    });
 
     const engine = Engine.create({ gravity: { x: 0, y: 0 } });
     const runner = Runner.create();
@@ -205,34 +181,24 @@ function Home() {
 
     const newBodies = [];
 
-    ICONS.forEach((iconName, index) => {
-      const isMobileDevice = cw < 600;
+    positionedIcons.forEach(({ iconName, img: icon, pos, visualWidth, visualHeight }, index) => {
+      icon.classList.remove("icon-layout-probe");
 
-      const scale = isMobileDevice ? 0.6 : 1;
-      const width = 80 * scale;
-      const height = 80 * scale;
-      const radius = 40 * scale;
+      const radius = Math.max(visualWidth, visualHeight) / 2;
 
-      const pos = positions[index];
-
-      const icon = document.createElement("img");
-      icon.src = `/icons/${iconName}`;
-      icon.className = "icon";
-      
-      icon.style.left = `${pos.x - width / 2}px`;
-      icon.style.top = `${pos.y - height / 2}px`;
-
-      container.appendChild(icon);
+      icon.style.left = `${pos.x - visualWidth / 2}px`;
+      icon.style.top = `${pos.y - visualHeight / 2}px`;
 
       let body;
       if (mobile) {
         // On mobile: enable collisions with walls but not with other bodies
         // We do this by setting collisionFilter to only collide with walls
         body = Bodies.circle(pos.x, pos.y, radius, {
-          restitution: 0.6,
-          frictionAir: 0.035,
-          friction: 0.0005,
-          density: 0.001,
+          // restitution is lower on mobile to reduce bouncing and make it feel more grounded
+          restitution: 1.2,
+          frictionAir: 0.005,
+          friction: 0.005,
+          density: 0.05,
           collisionFilter: {
             category: 0x0001,
             mask: 0x0002, // Only collide with walls (category 0x0002)
@@ -241,16 +207,25 @@ function Home() {
         });
       } else {
         body = Bodies.circle(pos.x, pos.y, radius, {
+          //restitution = bounciness, we can make it higher on desktop for a more playful feel since performance is better and it can handle the extra collisions
           restitution: 0.8,
-          frictionAir: 0.035,
+          frictionAir: 0.001, //was 0.8 but that felt very stiff
           friction: 0.0005,
-          density: 0.001,
+          density: 0.05,
           render: { visible: false },
         });
       }
 
       World.add(engine.world, body);
-      newBodies.push({ img: icon, body, originalPosition: { x: pos.x, y: pos.y } });
+      newBodies.push({
+        img: icon,
+        body,
+        originalPosition: { x: pos.x, y: pos.y },
+        visualWidth,
+        visualHeight,
+        floatPhase: index * 0.7,
+        floatDistance: 8 + (index % 4) * 2,
+      });
     });
 
     bodiesRef.current = newBodies;
@@ -303,7 +278,7 @@ function Home() {
     const updatePositions = () => {
       const now = performance.now();
 
-      newBodies.forEach(({ img, body }) => {
+      newBodies.forEach(({ img, body, visualWidth, visualHeight, floatPhase, floatDistance }) => {
         const speed = Math.hypot(body.velocity.x, body.velocity.y);
         const angSpeed = Math.abs(body.angularVelocity);
 
@@ -324,14 +299,12 @@ function Home() {
           Body.setAngularVelocity(body, nextAV);
         }
 
+        const floatOffset = Math.sin(now / 900 + floatPhase) * floatDistance;
         img.style.transform = `rotate(${body.angle}rad)`;
+        img.style.translate = `0 ${floatOffset}px`;
 
-        const isZig = img.src.includes("zig.svg");
-        const w = isZig ? 120 : 100;
-        const h = isZig ? 42 : 100;
-
-        img.style.left = `${body.position.x - w / 2}px`;
-        img.style.top = `${body.position.y - h / 2}px`;
+        img.style.left = `${body.position.x - visualWidth / 2}px`;
+        img.style.top = `${body.position.y - visualHeight / 2}px`;
         
         if (isFallingRef.current) {
           img.classList.add("falling");
@@ -386,13 +359,18 @@ function Home() {
 
       engine.gravity.y = 0;
 
-      bodies.forEach(({ body }) => {
+      bodies.forEach(({ body }, index) => {
         const kick = 5;
+        const direction = scrollDelta > 0 ? 1 : -1;
+        const xPush = Math.sin(index * 1.7 + currentScrollY * 0.01) * kick * 0.45;
+        const yPush = direction * (1.8 + (index % 4) * 0.35);
+
         Body.setVelocity(body, {
-          x: Math.max(-kick, Math.min(kick, body.velocity.x + (Math.random() - 0.5) * kick)),
-          y: Math.max(-kick, Math.min(kick, body.velocity.y + (Math.random() - 0.5) * kick)),
+          x: Math.max(-kick, Math.min(kick, body.velocity.x + xPush)),
+          y: Math.max(-kick, Math.min(kick, body.velocity.y + yPush)),
         });
-        const added = (Math.random() - 0.5) * 0.03;
+
+        const added = Math.cos(index * 1.3 + currentScrollY * 0.01) * 0.018;
         const cap = 0.12;
         Body.setAngularVelocity(body, Math.max(-cap, Math.min(cap, body.angularVelocity + added)));
       });
