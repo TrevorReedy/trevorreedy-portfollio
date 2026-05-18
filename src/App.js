@@ -26,7 +26,10 @@ const ICONS = [
   "typescript.svg",
   "zig.svg",
   "json.svg",
-  "jest.svg"
+  "jest.svg",
+  "aws.svg",
+  "nextjs.svg",
+  "supabase.svg",
 ];
 
 export const PROJECTS = [
@@ -104,6 +107,45 @@ function Home() {
 
   const scrollTimeoutRef = useRef(null);
   const lastScrollYRef = useRef(0);
+
+  // Repulsion field function - gently pushes icons away from edges
+  const applyRepulsion = (body, screenWidth, screenHeight) => {
+    const margin = 90; // Start pushing when within 90px of edge
+    const maxForce = 0.6; // Maximum push strength
+    
+    const x = body.position.x;
+    const y = body.position.y;
+    
+    let forceX = 0;
+    let forceY = 0;
+    
+    // Left edge repulsion
+    if (x < margin) {
+      const strength = maxForce * (1 - x / margin);
+      forceX += strength;
+    }
+    // Right edge repulsion
+    else if (x > screenWidth - margin) {
+      const strength = maxForce * (1 - (screenWidth - x) / margin);
+      forceX -= strength;
+    }
+    
+    // Top edge repulsion
+    if (y < margin) {
+      const strength = maxForce * (1 - y / margin);
+      forceY += strength;
+    }
+    // Bottom edge repulsion
+    else if (y > screenHeight - margin) {
+      const strength = maxForce * (1 - (screenHeight - y) / margin);
+      forceY -= strength;
+    }
+    
+    // Apply the push force
+    if (forceX !== 0 || forceY !== 0) {
+      Matter.Body.applyForce(body, body.position, { x: forceX, y: forceY });
+    }
+  };
 
   // Check if device is mobile
   const isMobile = () => {
@@ -198,7 +240,7 @@ function Home() {
           restitution: 0.9,
           frictionAir: 0.05,
           friction: 0.0005,
-          density: 0.08,
+          density: 0.1,
           collisionFilter: {
             category: 0x0001,
             mask: 0x0002, // Only collide with walls (category 0x0002)
@@ -211,7 +253,7 @@ function Home() {
           restitution: 0.8,
           frictionAir: 0.001, //was 0.8 but that felt very stiff
           friction: 0.0005,
-          density: 0.05,
+          density: 0.1,
           render: { visible: false },
         });
       }
@@ -278,6 +320,11 @@ function Home() {
     const updatePositions = () => {
       const now = performance.now();
 
+      // Apply repulsion field to all bodies to prevent bunching at edges
+      newBodies.forEach(({ body }) => {
+        applyRepulsion(body, cw, ch);
+      });
+
       newBodies.forEach(({ img, body, visualWidth, visualHeight, floatPhase, floatDistance }) => {
         const speed = Math.hypot(body.velocity.x, body.velocity.y);
         const angSpeed = Math.abs(body.angularVelocity);
@@ -339,66 +386,90 @@ function Home() {
     };
   }, []);
 
-  useEffect(() => {
-    const Body = Matter.Body;
-    let scrollTimer;
+useEffect(() => {
+  const Body = Matter.Body;
+  let scrollTimer;
+  let lastScrollTriggerTime = 0;
+  let isBufferActive = false;
+  let bufferTimeout = null;
 
-    const handleScroll = () => {
-      const engine = engineRef.current;
-      const bodies = bodiesRef.current;
-      if (!engine || bodies.length === 0) return;
+  const handleScroll = () => {
+    const engine = engineRef.current;
+    const bodies = bodiesRef.current;
+    if (!engine || bodies.length === 0) return;
 
-      const currentScrollY = window.scrollY;
-      const scrollDelta = currentScrollY - lastScrollYRef.current;
-      lastScrollYRef.current = currentScrollY;
-      if (Math.abs(scrollDelta) < 3) return;
+    const currentScrollY = window.scrollY;
+    const scrollDelta = currentScrollY - lastScrollYRef.current;
+    lastScrollYRef.current = currentScrollY;
+    
+    if (Math.abs(scrollDelta) < 3) return;
 
-      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+    // TIME BUFFER: Check if we're in cooldown period
+    const now = Date.now();
+    if (isBufferActive || (now - lastScrollTriggerTime) < 500) {
+      // Still in buffer period, ignore this scroll
+      return;
+    }
 
-      isFallingRef.current = true;
+    // First scroll after buffer - trigger movement
+    lastScrollTriggerTime = now;
+    isBufferActive = true;
 
-      engine.gravity.y = 0;
+    if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
 
-      bodies.forEach(({ body }, index) => {
-        const kick = 5;
-        const direction = scrollDelta > 0 ? 1 : -1;
-        const xPush = Math.sin(index * 1.7 + currentScrollY * 0.01) * kick * 0.45;
-        const yPush = direction * (1.8 + (index % 4) * 0.35);
+    isFallingRef.current = true;
+    engine.gravity.y = 0;
 
-        Body.setVelocity(body, {
-          x: Math.max(-kick, Math.min(kick, body.velocity.x + xPush)),
-          y: Math.max(-kick, Math.min(kick, body.velocity.y + yPush)),
-        });
+    // Apply kick to all icons
+    bodies.forEach(({ body }, index) => {
+      const kick = 5;
+      const direction = scrollDelta > 0 ? 1 : -1;
+      const xPush = Math.sin(index * 1.7 + currentScrollY * 0.01) * kick * 0.45;
+      const yPush = direction * (1.8 + (index % 4) * 0.35);
 
-        const added = Math.cos(index * 1.3 + currentScrollY * 0.01) * 0.018;
-        const cap = 0.12;
-        Body.setAngularVelocity(body, Math.max(-cap, Math.min(cap, body.angularVelocity + added)));
+      Body.setVelocity(body, {
+        x: Math.max(-kick, Math.min(kick, body.velocity.x + xPush)),
+        y: Math.max(-kick, Math.min(kick, body.velocity.y + yPush)),
       });
 
-      scrollTimeoutRef.current = setTimeout(() => {
-        const engineNow = engineRef.current;
-        if (!engineNow) return;
-        engineNow.gravity.y = 0;
-        isFallingRef.current = false;
-      }, 500);
-    };
+      const added = Math.cos(index * 1.3 + currentScrollY * 0.01) * 0.018;
+      const cap = 0.12;
+      Body.setAngularVelocity(body, Math.max(-cap, Math.min(cap, body.angularVelocity + added)));
+    });
 
-    const throttledScrollHandler = () => {
-      if (scrollTimer) return;
-      scrollTimer = setTimeout(() => {
-        handleScroll();
-        scrollTimer = null;
-      }, 40);
-    };
+    // Clear the falling flag after 500ms
+    scrollTimeoutRef.current = setTimeout(() => {
+      const engineNow = engineRef.current;
+      if (!engineNow) return;
+      engineNow.gravity.y = 0;
+      isFallingRef.current = false;
+    }, 500);
 
-    window.addEventListener("scroll", throttledScrollHandler);
+    // Clear the buffer after 500ms (allows next scroll to trigger again)
+    if (bufferTimeout) clearTimeout(bufferTimeout);
+    bufferTimeout = setTimeout(() => {
+      isBufferActive = false;
+      bufferTimeout = null;
+    }, 500);
+  };
 
-    return () => {
-      window.removeEventListener("scroll", throttledScrollHandler);
-      if (scrollTimer) clearTimeout(scrollTimer);
-      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
-    };
-  }, []);
+  const throttledScrollHandler = () => {
+    if (scrollTimer) return;
+    scrollTimer = setTimeout(() => {
+      handleScroll();
+      scrollTimer = null;
+    }, 40);
+  };
+
+  window.addEventListener("scroll", throttledScrollHandler);
+
+  return () => {
+    window.removeEventListener("scroll", throttledScrollHandler);
+    if (scrollTimer) clearTimeout(scrollTimer);
+    if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+    if (bufferTimeout) clearTimeout(bufferTimeout);
+  };
+}, []);
 
   function resetView(){
     window.scrollTo(0, 0);
