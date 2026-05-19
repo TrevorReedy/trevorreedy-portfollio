@@ -3,6 +3,7 @@ import { Routes, Route, Link } from "react-router-dom";
 import Matter from "matter-js";
 import "./App.css";
 import BlogPostPage from "./BlogPostPage.js";
+import AboutMe from "./AboutMe.js";
 
 const ICONS = [
   "css.svg",
@@ -554,6 +555,8 @@ useEffect(() => {
           </div>
         </header>
       </section>
+
+      <AboutMe/>
 
       <section className="projects-section" id="projects">
         <div className="section-content">
