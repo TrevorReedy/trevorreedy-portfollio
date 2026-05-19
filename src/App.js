@@ -311,13 +311,9 @@ function Home() {
           body = Bodies.circle(pos.x, pos.y, radius, {
             // restitution is lower on mobile to reduce bouncing and make it feel more grounded
             restitution: 0.9,
-            frictionAir: 0.05,
+            frictionAir: 0.003,
             friction: 0.0005,
-            density: 0.6,
-            collisionFilter: {
-              category: 0x0001,
-              mask: 0x0002, // Only collide with walls (category 0x0002)
-            },
+            density: 0.3,
             render: { visible: false },
           });
         } else {
@@ -397,9 +393,12 @@ function Home() {
       const now = performance.now();
 
       // Apply repulsion field to all bodies to prevent bunching at edges
+
+      if (!mobile) {
       newBodies.forEach(({ body }) => {
         applyRepulsion(body, cw, ch);
-      });
+        });
+      }
 
       newBodies.forEach(
         ({ img, body, visualWidth, visualHeight, floatPhase, floatDistance }) => {
