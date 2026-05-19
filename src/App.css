@@ -492,6 +492,7 @@ body {
 .about-links-card,
 .about-table-card {
   text-align: left;
+  font-size: x-large;
 }
 
 .about-subtitle {
@@ -521,6 +522,7 @@ body {
 
 .about-table-card h3 {
   text-align: center;
+  
   margin-bottom: 1.5rem;
 }
 
@@ -552,11 +554,13 @@ body {
 .about-table th:first-child,
 .about-table td:first-child {
   width: 80px;
+  font-size: x-large;
   text-align: center;
   font-weight: 700;
 }
 
 .about-table tbody tr {
+  font-size: x-large;
   border-bottom: 1px solid rgba(148, 163, 184, 0.3);
 }
 
