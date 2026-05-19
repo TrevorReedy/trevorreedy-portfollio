@@ -34,8 +34,8 @@ const ICONS = [
 
 export const PROJECTS = [
   {
-    slug: "zigit", 
-    name: "Zigit",
+    slug: "ziggit", 
+    name: "ZigGit",
     description: "A zig based CLI tool for git automation for new users",
     technologies: ["Zig", "GIT"],
     githubUrl: "https://github.com/TrevorReedy/ZigGit",
