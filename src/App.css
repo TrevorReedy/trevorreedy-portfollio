@@ -603,7 +603,7 @@ body {
 
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0.1rem;
 
   padding: 0.65rem 0.8rem;
   border-radius: 999px;
@@ -620,7 +620,7 @@ body {
 }
 
 .physics-toggle-icon {
-  width: 50px;
+  width: 23px;
   height: 40px;
   object-fit: contain;
   opacity: 0.95;
@@ -628,6 +628,38 @@ body {
   flex: 0 0 50px;
   filter: drop-shadow(0 0 10px rgba(124, 58, 237, 0.55));
   transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+@media (max-width: 768px) {
+ .physics-toggle-wrapper {
+    top: 0.7rem;
+    right: 0.7rem;
+    gap: 0.1rem;
+    padding: 0.45rem 0.55rem;
+  }
+
+  .physics-toggle-icon {
+    width: 34px;
+    height: 34px;
+    flex-basis: 34px;
+  }
+
+  .switch {
+    width: 58px;
+    height: 32px;
+    flex-basis: 58px;
+  }
+
+  .slider::before {
+    width: 26px;
+    height: 26px;
+    left: 3px;
+    top: 2px;
+  }
+
+  .switch input:checked + .slider::before {
+    transform: translateX(27px);
+  }
 }
 
 .physics-toggle-wrapper:hover .physics-toggle-icon {
