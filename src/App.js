@@ -314,6 +314,7 @@ function Home() {
             frictionAir: 0.003,
             friction: 0.0005,
             density: 0.3,
+            collisionFilter: { category: 0x0001, mask: 0x0002 },
             render: { visible: false },
           });
         } else {
