@@ -263,7 +263,7 @@ function Home() {
   });
     const iconsPerRow = getIconsPerRow(cw);
     const iconSize = getIconSize(cw, iconsPerRow);
-    const iconElements = mobile ? buildEvenIconRows(container, ICONS, iconsPerRow, iconSize) : buildRandomRows(container, ICONS, iconsPerRow, iconSize);
+    const iconElements = mobile ? buildRandomRows(container, ICONS, iconsPerRow, iconSize) : buildEvenIconRows(container, ICONS, iconsPerRow, iconSize);
     const containerRect = container.getBoundingClientRect();
 
     const positionedIcons = iconElements.map(({ iconName, img }) => {
