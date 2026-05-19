@@ -147,10 +147,7 @@ function Home() {
     }
   };
 
-  // Check if device is mobile
-  const isMobile = () => {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
-  };
+
 
   const getIconsPerRow = (width) => {
     if (width < 480) return 3;
@@ -164,6 +161,48 @@ function Home() {
   const size = (containerWidth - padding - gapTotal) / (iconsPerRow + 5);
     return Math.max(48, Math.min(160, size));
   };
+  const buildRandomRows = (container, iconNames, iconsPerRow, iconSize) => {
+    const iconElements = [];
+
+    // Shuffle a copy so the original ICONS array stays untouched
+    const shuffled = [...iconNames].sort(() => Math.random() - 0.5);
+
+    let i = 0;
+    while (i < shuffled.length) {
+        // Vary row size ±1 around iconsPerRow, clamped so we don't overshoot
+        const remaining = shuffled.length - i;
+        const variance = Math.floor(Math.random() * 3) - 1; // -1, 0, or +1
+        const rowSize = Math.min(Math.max(iconsPerRow + variance, 1), remaining);
+
+        const row = document.createElement("div");
+        row.className = "icon-row";
+
+        const rowIcons = shuffled.slice(i, i + rowSize);
+
+        rowIcons.forEach((iconName) => {
+            const icon = document.createElement("img");
+            icon.src = `/icons/${iconName}`;
+            icon.title = iconName.replace(".svg", "");
+            icon.className = "icon icon-layout-probe";
+
+            if (iconName === "zig.svg") {
+                icon.style.width = `${Math.round(iconSize * 2.86)}px`;
+                icon.style.height = `${iconSize * 0.35}px`;
+            } else {
+                icon.style.width = `${iconSize}px`;
+                icon.style.height = `${iconSize}px`;
+            }
+
+            row.appendChild(icon);
+            iconElements.push({ iconName, img: icon });
+        });
+
+        container.appendChild(row);
+        i += rowSize;
+    }
+
+    return iconElements;
+};
 
   const buildEvenIconRows = (container, iconNames, iconsPerRow, iconSize) => {
     const iconElements = [];
@@ -213,10 +252,18 @@ function Home() {
 
     const cw = container.offsetWidth;
     const ch = container.offsetHeight;
-    const mobile = isMobile();
+    const mobile = window.innerWidth < 768;
+
+    console.log("Viewport / icon layout debug:", {
+    windowInnerWidth: window.innerWidth,
+    windowInnerHeight: window.innerHeight,
+    containerWidth: cw,
+    containerHeight: ch,
+    mobile,
+  });
     const iconsPerRow = getIconsPerRow(cw);
     const iconSize = getIconSize(cw, iconsPerRow);
-    const iconElements = buildEvenIconRows(container, ICONS, iconsPerRow, iconSize);
+    const iconElements = mobile ? buildEvenIconRows(container, ICONS, iconsPerRow, iconSize) : buildRandomRows(container, ICONS, iconsPerRow, iconSize);
     const containerRect = container.getBoundingClientRect();
 
     const positionedIcons = iconElements.map(({ iconName, img }) => {
@@ -259,7 +306,7 @@ function Home() {
           restitution: 0.9,
           frictionAir: 0.05,
           friction: 0.0005,
-          density: 0.1,
+          density: 0.6,
           collisionFilter: {
             category: 0x0001,
             mask: 0x0002, // Only collide with walls (category 0x0002)
@@ -493,7 +540,7 @@ useEffect(() => {
   function resetView(){
     window.scrollTo(0, 0);
   }
-
+  
   return (
     <div className="App">
       <div className="icon-container" ref={containerRef}></div>
