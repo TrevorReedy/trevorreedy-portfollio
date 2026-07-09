@@ -31,6 +31,8 @@ const ICONS = [
   "aws.svg",
   "nextjs.svg",
   "supabase.svg",
+  "docker.svg",
+  "php.svg"
 ];
 
 export const PROJECTS = [

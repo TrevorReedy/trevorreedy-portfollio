@@ -81,14 +81,7 @@ export default function AboutMe() {
                   </tr>
                 </thead>
 
-                <tbody>
-                  {courses.map((course, index) => (
-                    <tr key={course}>
-                      <td>{index + 1}</td>
-                      <td>{course}</td>
-                    </tr>
-                  ))}
-                </tbody>
+              
               </table>
             </div>
           </article>
