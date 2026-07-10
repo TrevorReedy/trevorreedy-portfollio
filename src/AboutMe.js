@@ -1,15 +1,5 @@
 export default function AboutMe() {
-  const courses = [
-    "Data Structures",
-    "Algorithms",
-    "Mobile Development",
-    "Computer Architecture",
-    "Object-Oriented Design and Implementation",
-    "Operating Systems",
-    "Databases",
-    "Machine Learning",
-    "Programming Languages",
-  ];
+
 
   const skillGroups = [
     {
