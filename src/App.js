@@ -32,11 +32,27 @@ const ICONS = [
   "nextjs.svg",
   "supabase.svg",
   "docker.svg",
-  "php.svg"
+  "php.svg",
+  "jquery.svg",
+  "linux.svg"
 ];
 
 export const PROJECTS = [
-  {
+      {
+    slug: "capstone-CRM-project",
+    name: "Medical Device Company CRM: Senior Capstone",
+    description:
+      "A full stack CRM in order to manage business data and enforce business logic rules",
+    technologies: ["PHP","SQL","Javascript", "Jquery"],
+    githubUrl: "https://github.com/TrevorReedy/CS_Capstone_CRM",
+    blog: {
+      owner: "TrevorReedy",
+      repo: "CS_Capstone_CRM",
+      branch: "main",
+      folder: "content/blog",
+      file: "blog.md",
+    },
+  },{
     slug: "ziggit",
     name: "ZigGit",
     description: "A zig based CLI tool for git automation for new users",
@@ -94,6 +110,7 @@ export const PROJECTS = [
       file: "blog.md",
     },
   },
+
 ];
 
 function Home() {
