@@ -58,24 +58,7 @@ export default function AboutMe() {
           </article>
         </div>
 
-        <div className="about-content-block">
-          <article className="project-card about-table-card">
-            <h3>Relevant Coursework</h3>
 
-            <div className="about-table-wrapper">
-              <table className="about-table">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Course Title</th>
-                  </tr>
-                </thead>
-
-              
-              </table>
-            </div>
-          </article>
-        </div>
 
         <div className="about-content-block">
           <h2>Technical Skills</h2>
