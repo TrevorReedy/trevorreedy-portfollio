@@ -1,0 +1,15 @@
+{
+  "short_name": "Trevor Reedy",
+  "name": "Trevor Reedy | Software Engineer",
+  "icons": [
+    {
+      "src": "t-rex.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

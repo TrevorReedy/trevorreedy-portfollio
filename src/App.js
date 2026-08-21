@@ -52,7 +52,24 @@ export const PROJECTS = [
       folder: "content/blog",
       file: "blog.md",
     },
-  },{
+  },
+    {
+    slug: "the-finals-combat-simulator",
+    name: "The Finals FPS Combat Simulator",
+    description:
+      "A simulator for the FPS game The Finals to help players understand the complex combat mechanics and optimize their strategies",
+    technologies: ["Javascript", "Jest"],
+    githubUrl: "https://github.com/TrevorReedy/FinalsCombatSim",
+    demo:"https://trevorreedy.github.io/FinalsCombatSim/",
+    blog: {
+      owner: "TrevorReedy",
+      repo: "FinalsCombatSim",
+      branch: "main",
+      folder: "content/blog",
+      file: "blog.md",
+    },
+  },
+  {
     slug: "ziggit",
     name: "ZigGit",
     description: "A zig based CLI tool for git automation for new users",
@@ -95,21 +112,7 @@ export const PROJECTS = [
       file: "blog.md",
     },
   },
-  {
-    slug: "the-finals-combat-simulator",
-    name: "The Finals FPS Combat Simulator",
-    description:
-      "A simulator for the FPS game The Finals to help players understand the complex combat mechanics and optimize their strategies",
-    technologies: ["Javascript", "Jest"],
-    githubUrl: "https://github.com/TrevorReedy/FinalsCombatSim",
-    blog: {
-      owner: "TrevorReedy",
-      repo: "FinalsCombatSim",
-      branch: "main",
-      folder: "content/blog",
-      file: "blog.md",
-    },
-  },
+
 
 ];
 
@@ -655,6 +658,17 @@ function Home() {
                       Blog
                     </Link>
                   )}
+                  {project.demo && (
+                    <a
+                      href={project.demo}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="project-link demo"
+                    >
+                      Demo
+                    </a>
+                  )}
+
                 </div>
               </div>
             ))}
