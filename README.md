@@ -1,70 +1,70 @@
-# Getting Started with Create React App
+# trevorreedy.com
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+My personal portfolio and dev blog — the site I point people to when they ask what I build.
 
-## Available Scripts
+**Live:** [trevorreedy.com](https://www.trevorreedy.com/)
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## About
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+A single-page React app that collects my projects, a short about-me, and my dev
+blog in one place. Built to be fast, responsive, and easy to update — adding a
+project or a post is a data change, not a layout rewrite.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Features
 
-### `npm test`
+- **Project showcase** — each project with its stack, a summary, and links to source and live demos
+- **Dev blog** — write-ups on what I've been building and what broke along the way
+- **Technical skills** — grouped by languages, frameworks, tools, and AI tooling
+- **Responsive layout** — built mobile-first, works from phone to desktop
+- **Interactive touches** — small easter eggs for anyone who pokes around
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Tech Stack
 
-### `npm run build`
+| Layer | Choice |
+|---|---|
+| Framework | React (Create React App) |
+| Styling | Custom CSS |
+| Hosting | Vercel |
+| Domain | trevorreedy.com |
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Running Locally
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+git clone https://github.com/TrevorReedy/trevorreedy-portfollio.git
+cd trevorreedy-portfollio
+npm install
+npm start
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Opens at [http://localhost:3000](http://localhost:3000) with hot reload.
 
-### `npm run eject`
+To build for production:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```bash
+npm run build
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Project Structure
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```
+src/
+├── App.js            Main layout, routing, project data
+├── AboutMe.js        Bio and skills sections
+├── BlogPostPage.js   Blog post rendering
+└── App.css           Global styles
+public/
+├── icons/            Tech stack icons
+└── index.html
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Contact
 
-## Learn More
+- **Portfolio** — [trevorreedy.com](https://www.trevorreedy.com/)
+- **LinkedIn** — [trevor-reedy](https://www.linkedin.com/in/trevor-reedy-244711207/)
+- **Email** — trevinator001@gmail.com
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## License
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+MIT
